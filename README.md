@@ -9,7 +9,9 @@ Live demo of multiple Python linters, all configurable and running in your brows
 
 
 ## Credits
-- [Zac-HD](https://github.com/Zac-HD) for the initial idea, [specifically this issue](https://github.com/Zac-HD/shed/issues/49)
+- [Zac-HD](https://github.com/Zac-HD)
+  - for the initial idea, [specifically this issue](https://github.com/Zac-HD/shed/issues/49)
+  - for [`ghostwriter`](https://github.com/Zac-HD/Zac-HD.github.io/tree/master/ghostwriter) which was used as a base for [Pyodide](https://pyodide.org/en/stable/)
 - [José Padilla](https://github.com/jpadilla) for the initial [Black](https://black.readthedocs.io/en/latest/) [demo website](https://black.vercel.app/), from which most of this project was scaffolded (it uses a serverless backend while this project uses [Pyodide](https://pyodide.org/en/stable/))
 
 # TODO : ADDAPT THE NEXT SECTION

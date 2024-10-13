@@ -6,13 +6,19 @@ Live demo of multiple Python linters, all configurable and running in your brows
   - Would make a reusable project for any dev that want to show his config
 - Just allow to pass all parameters through url, so you can link here instead
 - Encourage the addition of more linters through PR
+- Move to Preact?
+- More languages? Dynamically load runtimes for js, rust...
+- Both PyOxide + API?
 
 
 ## Credits
 - [Zac-HD](https://github.com/Zac-HD)
   - for the initial idea, [specifically this issue](https://github.com/Zac-HD/shed/issues/49)
   - for [`ghostwriter`](https://github.com/Zac-HD/Zac-HD.github.io/tree/master/ghostwriter) which was used as a base for [Pyodide](https://pyodide.org/en/stable/)
-- [José Padilla](https://github.com/jpadilla) for the initial [Black](https://black.readthedocs.io/en/latest/) [demo website](https://black.vercel.app/), from which most of this project was scaffolded (it uses a serverless backend while this project uses [Pyodide](https://pyodide.org/en/stable/))
+- [José Padilla](https://github.com/jpadilla) for the initial [Black](https://black.readthedocs.io/en/latest/) [demo website](https://black.vercel.app/), from which most of this project was scaffolded (it uses a serverless backend while this project uses [Pyodide](https://pyodide.org/en/stable/), and it uses Next while this is a Vite React project)
+
+### Inspirations
+- Naming inspired from [Compiler Eexplorer](https://godbolt.org), which could be a good inspiration for future features
 
 # TODO : ADDAPT THE NEXT SECTION
 

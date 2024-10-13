@@ -1,7 +1,6 @@
 'use client';
 
 import React, { Component } from 'react';
-import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
 const TARGET_VERSIONS = {
@@ -68,11 +67,7 @@ export default class Sidebar extends Component {
     let stableUrl = `https://pypi.org/project/black/${versions.stable}/`;
 
     return (
-      <div
-        className={classNames('w-1/4', {
-          hidden: !this.props.visible,
-        })}
-      >
+      <div className={`w-1/4 ${!this.props.visible ? 'hidden' : ''}`}>
         <div className="p-4">
           <div className="flex flex-wrap">
             <div className="w-full px-3 mb-6">

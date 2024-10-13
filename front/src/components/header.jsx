@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
+import { Link } from "wouter";
 import Icon from './icon';
 
 const Head = (props) => (

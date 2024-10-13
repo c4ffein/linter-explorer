@@ -1,3 +1,4 @@
+// TODO : Remove whole? Use home-page as main?
 import React from 'react';
 import HomePage from './home-page';
 import { getStableVersion, getLatestVersion, loadState } from '../lib/api'
@@ -6,7 +7,7 @@ async function getData({ query }) {
   let mainVersion;
   let stableVersion;
   let currentVersion = query.version || 'stable';
-  let json = await loadState(currentVersion, query.state)
+  let json = await loadState(currentVersion, query.state);
 
   if (currentVersion === 'main') {
     mainVersion = json.version;
@@ -34,8 +35,9 @@ async function getData({ query }) {
   };
 }
 
-export default async function Page({ searchParams }) {
-  const { props } = await getData({ query: searchParams });
+export default function App({ searchParams }) {
+  // const { props } = await getData({ query: searchParams });  // TODO : Put it back
+  const props = {version: 'f', currentVersion: 'g', options: {}};
 
   return <HomePage props={props} />;
 }

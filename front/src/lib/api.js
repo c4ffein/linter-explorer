@@ -1,37 +1,26 @@
-const BASE_URL = process.env.NEXT_PUBLIC_VERCEL_URL
-  ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
-  : 'http://localhost:3000';
-const STABLE_URL = `${BASE_URL}/api/stable`;
-const MAIN_URL = `${BASE_URL}/api/latest`;
+// Modified version to use PyOxidizer
+// May also allow to use a backend as was previously intended, so keeping any async function async
 
 function urlByVersion(v) {
-  return v === 'stable' ? STABLE_URL : MAIN_URL;
+  return "TODO PARAMETERIZE";
 }
 
 export async function getStableVersion() {
-  let res = await (await fetch(`${STABLE_URL}/version`)).json();
-  return res.version;
+  return "TODO PARAMETERIZE";
 }
 
 export async function getLatestVersion() {
-  let res = await (await fetch(`${MAIN_URL}/version`)).json();
-  return res.version;
+  return "TODO PARAMETERIZE";
 }
 
 export async function loadState(version, state) {
-  return await (
-    await fetch(`${urlByVersion(version)}${state ? `?state=${state}` : ''}`)
-  ).json();
+  return {version: "TODO PARAMETERIZE", currentVersion: "TODO PARAMETERIZE ALSO", formatted_code: "Hello guyz"};
 }
 
 export function formatByVersion(version, data) {
-  return fetch(urlByVersion(version), {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  }).then((res) => {
-    return res.json();
-  });
+  return {
+    version: "TODO PARAMETERIZE",
+    currentVersion: "TODO PARAMETERIZE ALSO",
+    formatted_code: `Hello guyz!\n${data.source}`,
+  };
 }

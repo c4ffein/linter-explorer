@@ -1,6 +1,8 @@
 // Modified version to use PyOxidizer
 // May also allow to use a backend as was previously intended, so keeping any async function async
 
+import { lintBlack } from './pyodide-consumer';
+
 function urlByVersion(v) {
   return "TODO PARAMETERIZE";
 }
@@ -17,10 +19,11 @@ export async function loadState(version, state) {
   return {version: "TODO PARAMETERIZE", currentVersion: "TODO PARAMETERIZE ALSO", formatted_code: "Hello guyz"};
 }
 
-export function formatByVersion(version, data) {
+export async function formatByVersion(version, data) {
+  const obj = await lintBlack(data.source);
   return {
     version: "TODO PARAMETERIZE",
     currentVersion: "TODO PARAMETERIZE ALSO",
-    formatted_code: `Hello guyz!\n${data.source}`,
+    formatted_code: obj?.msg ?? '',  // TODO : Also something with .isError?
   };
 }

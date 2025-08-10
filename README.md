@@ -2,7 +2,14 @@
 Live demo of multiple Python linters, all configurable and running in your browser, to help you pick the one which fits you the most
 
 ## TODO Ideas
-- Make it configurable so you can limit the number of available linters / options, and set the CSS and the logo?
+*Not creating issues for now, this is just a quick PoC and I'm not sure where I'm going... Create those if you want*
+- Make `ruff` work
+  - This one will probably require to release an `Emscripten/wasm32` binary wheel for `ruff`
+  - The [Ruff Playground](https://play.ruff.rs) is built using [wasm-pack](https://rustwasm.github.io/wasm-pack/), but not sure this is compatible
+  - Actually, maybe we should find a way to bind that version and `subprocess.run` from Pyodide?..
+- Make `shed` work - will be easy once we get `ruff`
+  - Actually uses `subprocess.run` to use `ruff`... Glad that I checked, I guessed there was an API
+- Make it is configurable so you can limit the number of available linters / options, and set the CSS and the logo?
   - Would make a reusable project for any dev that want to show his config
 - Just allow to pass all parameters through url, so you can link here instead
 - Encourage the addition of more linters through PR
@@ -19,12 +26,13 @@ Live demo of multiple Python linters, all configurable and running in your brows
 
 ### Inspirations
 - Naming inspired from [Compiler Eexplorer](https://godbolt.org), which could be a good inspiration for future features
+- The [Ruff Playground](https://play.ruff.rs) is actually really good
 
 # TODO : ADDAPT THE NEXT SECTION
 
-[![Deploy](https://github.com/jpadilla/black-playground/actions/workflows/deploy.yml/badge.svg)](https://github.com/jpadilla/black-playground/actions/workflows/deploy.yml) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-
-Black is an [open-source](https://github.com/psf/black) Python code formatter by [@ambv](https://github.com/ambv). This is an example implementation.
+[![Deploy](https://github.com/jpadilla/black-playground/actions/workflows/deploy_.yml/badge.svg)](https://github.com/jpadilla/black-playground/actions/workflows/deploy.yml) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+                                                                                _
+Black is an [open-source](https://github.com/psf/black) Python code formatter by_ [@ambv](https://github.com/ambv). This is an example implementation.
 
 [Check it out](https://black.vercel.app).
 

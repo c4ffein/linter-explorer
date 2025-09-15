@@ -14,9 +14,18 @@
     </style>
 </head>
 <body>
-    <h1>🐍 Python Code Linter with Ruff WASM</h1>
+    <h1>🐍 Python Code Tools: Ruff & Black in Browser</h1>
 
-    <p>This demo shows how to use the Ruff linter compiled to WebAssembly for client-side Python code analysis.</p>
+    <p>This demo shows Python linting and formatting running entirely in your browser using WebAssembly - no server required!</p>
+
+    <div style="background: #f0f8ff; padding: 10px; border-radius: 5px; margin: 10px 0;">
+        <h3>🛠️ Available Tools:</h3>
+        <ul>
+            <li><strong>Ruff Linter</strong>: Ultra-fast Python linting (Rust WASM)</li>
+            <li><strong>Ruff Formatter</strong>: Fast Python code formatting</li>
+            <li><strong>Black Formatter</strong>: Official Python formatter via Pyodide</li>
+        </ul>
+    </div>
 
     <div style="background: #e6f3ff; padding: 15px; border-radius: 5px; margin: 10px 0;">
         <h3>🚀 How to Test:</h3>
@@ -47,8 +56,9 @@ def example_function():
 </textarea>
 
     <div>
-        <button onclick="lintCode()">🔍 Lint Code</button>
-        <button onclick="formatCode()">✨ Format Code</button>
+        <button onclick="lintCode()">🔍 Lint with Ruff</button>
+        <button onclick="formatCode()">⚡ Format with Ruff</button>
+        <button onclick="formatWithBlack()">🖤 Format with Black</button>
     </div>
 
     <h2>Results:</h2>
@@ -56,6 +66,7 @@ def example_function():
 
     <script type="module">
         import { lintPythonCode, formatPythonCode } from './lib/ruff-linter.js';
+        import { formatWithBlack } from './lib/black-formatter.js';
 
         window.lintCode = async function() {
             const code = document.getElementById('pythonCode').value;
@@ -111,6 +122,31 @@ def example_function():
                     }
                 } else {
                     results.innerHTML = `❌ Formatting failed: ${formatResults.error}`;
+                }
+            } catch (error) {
+                results.innerHTML = `❌ Error: ${error.message}`;
+            }
+        };
+
+        window.formatWithBlack = async function() {
+            const codeTextarea = document.getElementById('pythonCode');
+            const code = codeTextarea.value;
+            const results = document.getElementById('results');
+
+            results.innerHTML = '🔄 Formatting code with Black (loading Pyodide...)';
+
+            try {
+                const formatResults = await formatWithBlack(code);
+
+                if (formatResults.success) {
+                    if (formatResults.changed) {
+                        codeTextarea.value = formatResults.formatted;
+                        results.innerHTML = '<h3>🖤 Code formatted with Black!</h3><p>The code has been updated in the textarea above.</p>';
+                    } else {
+                        results.innerHTML = '<h3>✅ Code already Black-compliant!</h3><p>No changes were needed.</p>';
+                    }
+                } else {
+                    results.innerHTML = `❌ Black formatting failed: ${formatResults.error}`;
                 }
             } catch (error) {
                 results.innerHTML = `❌ Error: ${error.message}`;

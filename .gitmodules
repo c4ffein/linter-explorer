@@ -1,0 +1,3 @@
+[submodule "vendor/shed"]
+	path = vendor/shed
+	url = https://github.com/Zac-HD/shed

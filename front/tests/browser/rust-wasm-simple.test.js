@@ -13,7 +13,7 @@ describe('Rust WebAssembly Simple Execution', () => {
   });
 
   it('should execute Rust functions directly via WASM exports', async () => {
-    const wasmPath = join(process.cwd(), 'wasm-math/pkg/wasm_math_bg.wasm');
+    const wasmPath = join(process.cwd(), 'wasm-math/pkg/wasm_linter_bg.wasm');
     const wasmBuffer = readFileSync(wasmPath);
 
     await page.goto('about:blank');
@@ -34,7 +34,7 @@ describe('Rust WebAssembly Simple Execution', () => {
       // Create the imports object exactly as wasm-bindgen expects
       const imports = {
         wbg: {
-          __wbg_log_b08a57f8c3219545: function(ptr, len) {
+          __wbg_log_be42534a310aeb7d: function(ptr, len) {
             console.log(getStringFromWasm(ptr, len));
           },
           __wbindgen_init_externref_table: function() {
@@ -63,14 +63,10 @@ describe('Rust WebAssembly Simple Execution', () => {
 
         // Test our Rust functions directly
         const addResult = wasmExports.add(10, 32);
-        const fibResult = wasmExports.fibonacci(8);
-        const primeResult = wasmExports.is_prime(13);
 
         return {
           success: true,
           addResult,
-          fibResult,
-          primeResult,
           memoryPages: wasmMemory.buffer.byteLength / 65536,
           exports: Object.keys(wasmExports).slice(0, 15)
         };
@@ -88,15 +84,13 @@ describe('Rust WebAssembly Simple Execution', () => {
 
     expect(result.success).toBe(true);
     expect(result.addResult).toBe(42); // 10 + 32
-    expect(result.fibResult).toBe(21); // fibonacci(8)
-    expect(result.primeResult).toBe(1); // 13 is prime (WASM returns 1 for true)
     expect(result.exports).toContain('add');
-    expect(result.exports).toContain('fibonacci');
-    expect(result.exports).toContain('is_prime');
+    expect(result.exports).toContain('greet');
+    expect(result.exports).toContain('demo_message');
   });
 
   it('should handle Rust string functions', async () => {
-    const wasmPath = join(process.cwd(), 'wasm-math/pkg/wasm_math_bg.wasm');
+    const wasmPath = join(process.cwd(), 'wasm-math/pkg/wasm_linter_bg.wasm');
     const wasmBuffer = readFileSync(wasmPath);
 
     await page.goto('about:blank');
@@ -123,7 +117,7 @@ describe('Rust WebAssembly Simple Execution', () => {
 
       const imports = {
         wbg: {
-          __wbg_log_b08a57f8c3219545: function(ptr, len) {
+          __wbg_log_be42534a310aeb7d: function(ptr, len) {
             console.log('Rust says:', getStringFromWasm(ptr, len));
           },
           __wbindgen_init_externref_table: function() {

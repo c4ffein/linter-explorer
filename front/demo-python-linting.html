@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Linting with Ruff WASM</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        textarea { width: 100%; height: 200px; font-family: monospace; }
+        .results { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .diagnostic { margin: 5px 0; padding: 5px; background: #ffe6e6; border-left: 3px solid #ff4444; }
+        .diagnostic.warning { background: #fff4e6; border-left-color: #ff8800; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🐍 Python Code Linter with Ruff WASM</h1>
+
+    <p>This demo shows how to use the Ruff linter compiled to WebAssembly for client-side Python code analysis.</p>
+
+    <div style="background: #e6f3ff; padding: 15px; border-radius: 5px; margin: 10px 0;">
+        <h3>🚀 How to Test:</h3>
+        <ol>
+            <li><strong>Serve this file over HTTP</strong> (required for WASM loading):
+                <ul>
+                    <li><code>npm run dev</code> (if available), or</li>
+                    <li><code>python -m http.server 8000</code>, or</li>
+                    <li>Any other HTTP server</li>
+                </ul>
+            </li>
+            <li><strong>Open in browser</strong>: <code>http://localhost:8000/demo-python-linting.html</code></li>
+            <li><strong>Click buttons below</strong> to test linting and formatting!</li>
+        </ol>
+    </div>
+
+    <h2>Enter Python Code:</h2>
+    <textarea id="pythonCode" placeholder="Enter your Python code here...">
+import unused_module
+import os
+
+def example_function():
+    x=1+2
+    unused_variable = "hello"
+    if x>0:
+        print("positive")
+    # Missing return statement
+</textarea>
+
+    <div>
+        <button onclick="lintCode()">🔍 Lint Code</button>
+        <button onclick="formatCode()">✨ Format Code</button>
+    </div>
+
+    <h2>Results:</h2>
+    <div id="results" class="results">Click "Lint Code" or "Format Code" to see results here...</div>
+
+    <script type="module">
+        import { lintPythonCode, formatPythonCode } from './lib/ruff-linter.js';
+
+        window.lintCode = async function() {
+            const code = document.getElementById('pythonCode').value;
+            const results = document.getElementById('results');
+
+            results.innerHTML = '🔄 Linting code...';
+
+            try {
+                const lintResults = await lintPythonCode(code);
+
+                if (lintResults.success) {
+                    let html = `<h3>✅ Linting completed - ${lintResults.diagnostics.length} issues found</h3>`;
+
+                    if (lintResults.diagnostics.length === 0) {
+                        html += '<p>🎉 No issues found! Your code looks great.</p>';
+                    } else {
+                        lintResults.diagnostics.forEach(diagnostic => {
+                            const severity = diagnostic.severity || 'error';
+                            html += `
+                                <div class="diagnostic ${severity}">
+                                    <strong>${diagnostic.code}</strong>: ${diagnostic.message}
+                                    <br><small>Line ${diagnostic.line}, Column ${diagnostic.column}</small>
+                                </div>
+                            `;
+                        });
+                    }
+
+                    results.innerHTML = html;
+                } else {
+                    results.innerHTML = `❌ Linting failed: ${lintResults.error}`;
+                }
+            } catch (error) {
+                results.innerHTML = `❌ Error: ${error.message}`;
+            }
+        };
+
+        window.formatCode = async function() {
+            const codeTextarea = document.getElementById('pythonCode');
+            const code = codeTextarea.value;
+            const results = document.getElementById('results');
+
+            results.innerHTML = '🔄 Formatting code...';
+
+            try {
+                const formatResults = await formatPythonCode(code);
+
+                if (formatResults.success) {
+                    if (formatResults.changed) {
+                        codeTextarea.value = formatResults.formatted;
+                        results.innerHTML = '<h3>✨ Code formatted successfully!</h3><p>The code has been updated in the textarea above.</p>';
+                    } else {
+                        results.innerHTML = '<h3>✅ Code already well-formatted!</h3><p>No changes were needed.</p>';
+                    }
+                } else {
+                    results.innerHTML = `❌ Formatting failed: ${formatResults.error}`;
+                }
+            } catch (error) {
+                results.innerHTML = `❌ Error: ${error.message}`;
+            }
+        };
+    </script>
+</body>
+</html>

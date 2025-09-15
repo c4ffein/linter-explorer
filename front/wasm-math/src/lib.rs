@@ -6,6 +6,7 @@ extern "C" {
     fn log(s: &str);
 }
 
+// Simple demo functions - real linting will be handled by the official Ruff WASM package in JS
 #[wasm_bindgen]
 pub fn add(a: i32, b: i32) -> i32 {
     log(&format!("Adding {} + {} in Rust!", a, b));
@@ -13,31 +14,13 @@ pub fn add(a: i32, b: i32) -> i32 {
 }
 
 #[wasm_bindgen]
-pub fn fibonacci(n: u32) -> u32 {
-    log(&format!("Computing fibonacci({}) in Rust!", n));
-    match n {
-        0 => 0,
-        1 => 1,
-        _ => fibonacci(n - 1) + fibonacci(n - 2),
-    }
-}
-
-#[wasm_bindgen]
-pub fn is_prime(n: u32) -> bool {
-    log(&format!("Checking if {} is prime in Rust!", n));
-    if n < 2 {
-        return false;
-    }
-    for i in 2..((n as f64).sqrt() as u32 + 1) {
-        if n % i == 0 {
-            return false;
-        }
-    }
-    true
-}
-
-#[wasm_bindgen]
 pub fn greet(name: &str) -> String {
     log(&format!("Hello from Rust, {}!", name));
     format!("Hello from Rust, {}!", name)
+}
+
+#[wasm_bindgen]
+pub fn demo_message() -> String {
+    log("This WASM module demonstrates basic Rust functions. Python linting is handled by the official Ruff WASM package.");
+    "Ready for Python linting with Ruff!".to_string()
 }

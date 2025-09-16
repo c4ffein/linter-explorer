@@ -6,6 +6,9 @@ help:
 install-puppeteer-deps:
 	@./scripts/install-deps-for-puppeteer.sh
 
+install:
+	cd front && npm install
+
 init-shed:
 	@echo "🏠 Initializing Shed submodule..."
 	git submodule update --init --recursive vendor/shed
@@ -18,3 +21,7 @@ build-shed:
 
 test: init-shed build-shed
 	cd front && npm test
+
+clean:
+	rm -rf front/node_modules
+	rm -rf front/dist

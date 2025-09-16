@@ -24,6 +24,7 @@
             <li><strong>Ruff Linter</strong>: Ultra-fast Python linting (Rust WASM)</li>
             <li><strong>Ruff Formatter</strong>: Fast Python code formatting</li>
             <li><strong>Black Formatter</strong>: Official Python formatter via Pyodide</li>
+            <li><strong>Shed</strong>: Complete code canonicalization using actual Shed source via git submodule (Black + Ruff WASM + Black)</li>
         </ul>
     </div>
 
@@ -59,11 +60,13 @@ def example_function():
         <button onclick="lintCode()">🔍 Lint with Ruff</button>
         <button onclick="formatCode()">⚡ Format with Ruff</button>
         <button onclick="formatWithBlack()">🖤 Format with Black</button>
+        <button onclick="formatWithShed()">🏠 Canonicalize with Shed</button>
     </div>
 
     <h2>Results:</h2>
     <div id="results" class="results">Click "Lint Code" or "Format Code" to see results here...</div>
 
+    <script src="./dist/shed-formatter.umd.cjs"></script>
     <script type="module">
         import { lintPythonCode, formatPythonCode } from './lib/ruff-linter.js';
         import { formatWithBlack } from './lib/black-formatter.js';
@@ -147,6 +150,49 @@ def example_function():
                     }
                 } else {
                     results.innerHTML = `❌ Black formatting failed: ${formatResults.error}`;
+                }
+            } catch (error) {
+                results.innerHTML = `❌ Error: ${error.message}`;
+            }
+        };
+
+        window.formatWithShed = async function() {
+            const codeTextarea = document.getElementById('pythonCode');
+            const code = codeTextarea.value;
+            const results = document.getElementById('results');
+
+            results.innerHTML = '🔄 Canonicalizing code with Shed (loading Pyodide...)';
+
+            try {
+                const formatResults = await window.ShedFormatter.formatWithShed(code);
+
+                if (formatResults.success) {
+                    if (formatResults.changed) {
+                        codeTextarea.value = formatResults.formatted;
+
+                        let improvementText = '🏠 Code canonicalized with Shed!';
+                        if (formatResults.improvements) {
+                            const improvements = [];
+                            if (formatResults.improvements.removed_imports > 0) {
+                                improvements.push(`Removed ${formatResults.improvements.removed_imports} unused imports`);
+                            }
+                            if (formatResults.improvements.sorted_imports) {
+                                improvements.push('Sorted imports');
+                            }
+                            if (formatResults.improvements.black_formatted) {
+                                improvements.push('Applied Black formatting');
+                            }
+                            if (improvements.length > 0) {
+                                improvementText += '<br><small>Improvements: ' + improvements.join(', ') + '</small>';
+                            }
+                        }
+
+                        results.innerHTML = `<h3>${improvementText}</h3><p>The code has been updated in the textarea above.</p>`;
+                    } else {
+                        results.innerHTML = '<h3>✅ Code already perfectly canonicalized!</h3><p>No changes were needed.</p>';
+                    }
+                } else {
+                    results.innerHTML = `❌ Shed formatting failed: ${formatResults.error}`;
                 }
             } catch (error) {
                 results.innerHTML = `❌ Error: ${error.message}`;

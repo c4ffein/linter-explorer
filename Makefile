@@ -1,4 +1,4 @@
-.PHONY: help install-puppeteer-deps build-wasm test
+.PHONY: help install-puppeteer-deps build-wasm test init-shed
 
 help:
 	echo "Hello"
@@ -9,5 +9,10 @@ install-puppeteer-deps:
 build-wasm:
 	cd front/wasm-math && wasm-pack build --target web
 
-test: build-wasm
+init-shed:
+	@echo "🏠 Initializing Shed submodule..."
+	git submodule update --init --recursive vendor/shed
+	@echo "✅ Shed submodule initialized!"
+
+test: build-wasm init-shed
 	cd front && npm test

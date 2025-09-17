@@ -3,6 +3,7 @@ import { setupBrowser, teardownBrowser, page } from '../helpers/browser.js';
 import express from 'express';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { readFileSync } from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -170,5 +171,114 @@ def test_function():
     expect(result.hasImprovements).toBe(true);
 
     console.log('✅ Shed analysis works in headless browser!');
+  }, 180000);
+
+  it('should match local Shed formatter output exactly', async () => {
+    // Load the comprehensive test file and local reference
+    const testFilesDir = join(__dirname, '../../../test_files');
+    const originalCode = readFileSync(join(testFilesDir, 'broken_python.py'), 'utf-8');
+    const localShedOutput = readFileSync(join(testFilesDir, 'outputs/shed_formatted.py'), 'utf-8');
+
+    await page.goto(`${serverUrl}/front/demo-python-linting.html`);
+
+    // Load the pre-built Shed UMD bundle
+    await page.addScriptTag({
+      path: join(__dirname, '../../dist/shed-formatter.umd.cjs')
+    });
+
+    // Wait for the bundle to load
+    await page.waitForFunction(() => window.ShedFormatter !== undefined, { timeout: 10000 });
+
+    const result = await page.evaluate(async (testCode) => {
+      try {
+        const formatResult = await window.ShedFormatter.formatWithShed(testCode);
+        return {
+          success: formatResult.success,
+          formatted: formatResult.formatted,
+          changed: formatResult.changed,
+          error: formatResult.error
+        };
+      } catch (error) {
+        return {
+          success: false,
+          error: error.message
+        };
+      }
+    }, originalCode);
+
+    console.log('🏠 Web vs Local Shed Comparison:', {
+      webSuccess: result.success,
+      webLength: result.formatted?.length,
+      localLength: localShedOutput.length,
+      changed: result.changed
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.changed).toBe(true);
+    expect(result.formatted).toBe(localShedOutput);
+
+    console.log('✅ Web Shed matches local Shed formatter exactly!');
+  }, 180000);
+
+  it('should demonstrate Shed vs individual tools progression', async () => {
+    // Load test files - Shed should do everything the other tools do, but better
+    const testFilesDir = join(__dirname, '../../../test_files');
+    const originalCode = readFileSync(join(testFilesDir, 'broken_python.py'), 'utf-8');
+    const shedOutput = readFileSync(join(testFilesDir, 'outputs/shed_formatted.py'), 'utf-8');
+
+    // For reference: what individual tools produce
+    const ruffLength = readFileSync(join(testFilesDir, 'outputs/ruff_formatted.py'), 'utf-8').length;
+    const blackLength = readFileSync(join(testFilesDir, 'outputs/black_formatted.py'), 'utf-8').length;
+
+    await page.goto(`${serverUrl}/front/demo-python-linting.html`);
+
+    // Load Shed bundle
+    await page.addScriptTag({
+      path: join(__dirname, '../../dist/shed-formatter.umd.cjs')
+    });
+    await page.waitForFunction(() => window.ShedFormatter !== undefined, { timeout: 10000 });
+
+    const result = await page.evaluate(async (testCode) => {
+      try {
+        // Only run Shed - it handles Ruff and Black internally!
+        const shedResult = await window.ShedFormatter.formatWithShed(testCode);
+
+        return {
+          original: {
+            length: testCode.length,
+            lines: testCode.split('\\n').length
+          },
+          shed: {
+            success: shedResult.success,
+            length: shedResult.formatted?.length || 0,
+            lines: shedResult.formatted?.split('\\n').length || 0,
+            formatted: shedResult.formatted
+          }
+        };
+      } catch (error) {
+        return { error: error.message };
+      }
+    }, originalCode);
+
+    console.log('📊 Shed vs Individual Tools Analysis:');
+    console.log(`📁 Original:     ${result.original.length} chars, ${result.original.lines} lines`);
+    console.log(`🏠 Web Shed:     ${result.shed.length} chars, ${result.shed.lines} lines`);
+    console.log(`📏 Local Shed:   ${shedOutput.length} chars (reference)`);
+    console.log(`🔧 Local Ruff:   ${ruffLength} chars (for comparison)`);
+    console.log(`🖤 Local Black:  ${blackLength} chars (for comparison)`);
+
+    // Shed should succeed
+    expect(result.shed.success).toBe(true);
+
+    // Web Shed should match local Shed exactly
+    expect(result.shed.length).toBe(shedOutput.length);
+    expect(result.shed.formatted).toBe(shedOutput);
+
+    // Shed should be more aggressive than individual Ruff/Black (removes unused imports)
+    expect(result.shed.length).toBeLessThan(ruffLength);
+    expect(result.shed.length).toBeLessThan(blackLength);
+
+    console.log('✅ Shed combines Ruff + Black + more, producing optimal output!');
+    console.log('🎯 Web Shed matches local Shed exactly and outperforms individual tools!');
   }, 180000);
 });

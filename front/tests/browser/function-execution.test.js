@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { setupBrowser, teardownBrowser, executeFunction, loadPage } from '../helpers/browser.js';
 
+// Keeping this test to check the most basic thing still works
+
 describe('Function Execution in Headless Browser', () => {
   beforeEach(async () => {
     await setupBrowser();

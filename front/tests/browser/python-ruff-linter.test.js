@@ -3,6 +3,7 @@ import { setupBrowser, teardownBrowser, page } from '../helpers/browser.js';
 import express from 'express';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { readFileSync } from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -191,6 +192,92 @@ def bad_function():
 
     console.log('🎉 Python code formatting works perfectly in headless browser!');
     console.log('📝 Original:', result.original.replace(/\n/g, '\\n'));
-    console.log('✨ Formatted:', result.formatted.replace(/\n/g, '\\n'));  // TODO Actually check formatted code
+    console.log('✨ Formatted:', result.formatted.replace(/\n/g, '\\n'));
   });
+
+  it('should match local Ruff formatter output exactly', async () => {
+    // Load the comprehensive test file and local reference
+    const testFilesDir = join(__dirname, '../../../test_files');
+    const originalCode = readFileSync(join(testFilesDir, 'broken_python.py'), 'utf-8');
+    const localRuffOutput = readFileSync(join(testFilesDir, 'outputs/ruff_formatted.py'), 'utf-8');
+
+    await page.goto(`${serverUrl}/demo-python-linting.html`);
+
+    const result = await page.evaluate(async (testCode) => {
+      // Import and use the Ruff linter module
+      const { formatPythonCode } = await import('./lib/ruff-linter.js');
+
+      try {
+        const formatResult = await formatPythonCode(testCode);
+        return {
+          success: formatResult.success,
+          formatted: formatResult.formatted,
+          changed: formatResult.changed,
+          error: formatResult.error
+        };
+      } catch (error) {
+        return {
+          success: false,
+          error: error.message
+        };
+      }
+    }, originalCode);
+
+    console.log('🔧 Web vs Local Ruff Comparison:', {
+      webSuccess: result.success,
+      webLength: result.formatted?.length,
+      localLength: localRuffOutput.length,
+      changed: result.changed
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.changed).toBe(true);
+    expect(result.formatted).toBe(localRuffOutput);
+
+    console.log('✅ Web Ruff matches local Ruff formatter exactly!');
+  }, 30000);
+
+  it('should match local Ruff linter diagnostics', async () => {
+    // Load test files
+    const testFilesDir = join(__dirname, '../../../test_files');
+    const originalCode = readFileSync(join(testFilesDir, 'broken_python.py'), 'utf-8');
+    const localLintResults = JSON.parse(readFileSync(join(testFilesDir, 'outputs/ruff_lint_results.json'), 'utf-8'));
+
+    await page.goto(`${serverUrl}/demo-python-linting.html`);
+
+    const result = await page.evaluate(async (testCode) => {
+      const { lintPythonCode } = await import('./lib/ruff-linter.js');
+
+      try {
+        const lintResult = await lintPythonCode(testCode);
+        return {
+          success: lintResult.success,
+          diagnostics: lintResult.diagnostics,
+          totalIssues: lintResult.totalIssues
+        };
+      } catch (error) {
+        return {
+          success: false,
+          error: error.message
+        };
+      }
+    }, originalCode);
+
+    console.log('🔍 Web vs Local Ruff Lint Comparison:', {
+      webSuccess: result.success,
+      webIssues: result.totalIssues,
+      localIssues: localLintResults.length
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.totalIssues).toBe(localLintResults.length);
+
+    // Compare diagnostic codes
+    const webCodes = (result.diagnostics || []).map(d => d.code).sort();
+    const localCodes = localLintResults.map(d => d.code).sort();
+    expect(webCodes).toEqual(localCodes);
+
+    console.log('✅ Web Ruff linter matches local Ruff linter exactly!');
+    console.log(`🎯 Consistently found ${result.totalIssues} issues`);
+  }, 30000);
 });

@@ -3,6 +3,7 @@ import { setupBrowser, teardownBrowser, page } from '../helpers/browser.js';
 import express from 'express';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { readFileSync } from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -237,5 +238,47 @@ result
     expect(result.isCompliant).toBe(true);
 
     console.log('✅ Black compliance checking works in headless browser!');
+  }, 120000);
+
+  it('should match local Black formatter output exactly', async () => {
+    // Load the comprehensive test file and local reference
+    const testFilesDir = join(__dirname, '../../../test_files');
+    const originalCode = readFileSync(join(testFilesDir, 'broken_python.py'), 'utf-8');
+    const localBlackOutput = readFileSync(join(testFilesDir, 'outputs/black_formatted.py'), 'utf-8');
+
+    await page.goto(`${serverUrl}/demo-python-linting.html`);
+
+    const result = await page.evaluate(async (testCode) => {
+      // Import and use the Black formatter module
+      const { formatWithBlack } = await import('./lib/black-formatter.js');
+
+      try {
+        const formatResult = await formatWithBlack(testCode);
+        return {
+          success: formatResult.success,
+          formatted: formatResult.formatted,
+          changed: formatResult.changed,
+          error: formatResult.error
+        };
+      } catch (error) {
+        return {
+          success: false,
+          error: error.message
+        };
+      }
+    }, originalCode);
+
+    console.log('🖤 Web vs Local Black Comparison:', {
+      webSuccess: result.success,
+      webLength: result.formatted?.length,
+      localLength: localBlackOutput.length,
+      changed: result.changed
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.changed).toBe(true);
+    expect(result.formatted).toBe(localBlackOutput);
+
+    console.log('✅ Web Black matches local Black formatter exactly!');
   }, 120000);
 });

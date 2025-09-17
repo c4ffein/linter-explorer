@@ -1,7 +1,13 @@
-.PHONY: help install-puppeteer-deps build-shed test init-shed
+.PHONY: help install-puppeteer-deps build-shed test init-shed generate-references
 
 help:
-	echo "Hello"
+	@echo "make install-puppeteer-deps"
+	@echo "make install"
+	@echo "make init-shed"
+	@echo "make build-shed"
+	@echo "make generate-references"
+	@echo "make test"
+	@echo "make clean"
 
 install-puppeteer-deps:
 	@./scripts/install-deps-for-puppeteer.sh
@@ -18,6 +24,11 @@ build-shed:
 	@echo "📦 Building Shed UMD bundle..."
 	cd front && npm run build
 	@echo "✅ Shed bundle built!"
+
+generate-references:
+	@echo "🔧 Generating local tool reference outputs..."
+	python scripts/format_local.py
+	@echo "✅ Reference outputs generated in test_files/outputs/"
 
 test: init-shed build-shed
 	cd front && npm test

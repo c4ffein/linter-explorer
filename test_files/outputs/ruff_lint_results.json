@@ -1,0 +1,1189 @@
+[
+  {
+    "cell": null,
+    "code": "E401",
+    "end_location": {
+      "column": 24,
+      "row": 2
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "import os\nimport sys\nimport json\nimport re",
+          "end_location": {
+            "column": 24,
+            "row": 2
+          },
+          "location": {
+            "column": 1,
+            "row": 2
+          }
+        }
+      ],
+      "message": "Split imports"
+    },
+    "location": {
+      "column": 1,
+      "row": 2
+    },
+    "message": "Multiple imports on one line",
+    "noqa_row": 2,
+    "url": "https://docs.astral.sh/ruff/rules/multiple-imports-on-one-line"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 12,
+      "row": 2
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 3
+          },
+          "location": {
+            "column": 1,
+            "row": 2
+          }
+        }
+      ],
+      "message": "Remove unused import"
+    },
+    "location": {
+      "column": 10,
+      "row": 2
+    },
+    "message": "`os` imported but unused",
+    "noqa_row": 2,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 16,
+      "row": 2
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 3
+          },
+          "location": {
+            "column": 1,
+            "row": 2
+          }
+        }
+      ],
+      "message": "Remove unused import"
+    },
+    "location": {
+      "column": 13,
+      "row": 2
+    },
+    "message": "`sys` imported but unused",
+    "noqa_row": 2,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 21,
+      "row": 2
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 3
+          },
+          "location": {
+            "column": 1,
+            "row": 2
+          }
+        }
+      ],
+      "message": "Remove unused import"
+    },
+    "location": {
+      "column": 17,
+      "row": 2
+    },
+    "message": "`json` imported but unused",
+    "noqa_row": 2,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 24,
+      "row": 2
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 3
+          },
+          "location": {
+            "column": 1,
+            "row": 2
+          }
+        }
+      ],
+      "message": "Remove unused import"
+    },
+    "location": {
+      "column": 22,
+      "row": 2
+    },
+    "message": "`re` imported but unused",
+    "noqa_row": 2,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 23,
+      "row": 3
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 4
+          },
+          "location": {
+            "column": 1,
+            "row": 3
+          }
+        }
+      ],
+      "message": "Remove unused import: `unused_module_1`"
+    },
+    "location": {
+      "column": 8,
+      "row": 3
+    },
+    "message": "`unused_module_1` imported but unused",
+    "noqa_row": 3,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 23,
+      "row": 4
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 5
+          },
+          "location": {
+            "column": 1,
+            "row": 4
+          }
+        }
+      ],
+      "message": "Remove unused import: `unused_module_2`"
+    },
+    "location": {
+      "column": 8,
+      "row": 4
+    },
+    "message": "`unused_module_2` imported but unused",
+    "noqa_row": 4,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F403",
+    "end_location": {
+      "column": 32,
+      "row": 5
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 1,
+      "row": 5
+    },
+    "message": "`from collections import *` used; unable to detect undefined names",
+    "noqa_row": 5,
+    "url": "https://docs.astral.sh/ruff/rules/undefined-local-with-import-star"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 15,
+      "row": 6
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 7
+          },
+          "location": {
+            "column": 1,
+            "row": 6
+          }
+        }
+      ],
+      "message": "Remove unused import: `typing`"
+    },
+    "location": {
+      "column": 9,
+      "row": 6
+    },
+    "message": "`typing` imported but unused",
+    "noqa_row": 6,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 12,
+      "row": 8
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 9
+          },
+          "location": {
+            "column": 1,
+            "row": 8
+          }
+        }
+      ],
+      "message": "Remove unused import: `math`"
+    },
+    "location": {
+      "column": 8,
+      "row": 8
+    },
+    "message": "`math` imported but unused",
+    "noqa_row": 8,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 16,
+      "row": 9
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 10
+          },
+          "location": {
+            "column": 1,
+            "row": 9
+          }
+        }
+      ],
+      "message": "Remove unused import: `datetime`"
+    },
+    "location": {
+      "column": 8,
+      "row": 9
+    },
+    "message": "`datetime` imported but unused",
+    "noqa_row": 9,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 15,
+      "row": 10
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 11
+          },
+          "location": {
+            "column": 1,
+            "row": 10
+          }
+        }
+      ],
+      "message": "Remove unused import: `pathlib`"
+    },
+    "location": {
+      "column": 8,
+      "row": 10
+    },
+    "message": "`pathlib` imported but unused",
+    "noqa_row": 10,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 18,
+      "row": 11
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 12
+          },
+          "location": {
+            "column": 1,
+            "row": 11
+          }
+        }
+      ],
+      "message": "Remove unused import: `subprocess`"
+    },
+    "location": {
+      "column": 8,
+      "row": 11
+    },
+    "message": "`subprocess` imported but unused",
+    "noqa_row": 11,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F841",
+    "end_location": {
+      "column": 15,
+      "row": 19
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": {
+      "applicability": "unsafe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 20
+          },
+          "location": {
+            "column": 1,
+            "row": 19
+          }
+        }
+      ],
+      "message": "Remove assignment to unused variable `unused_var`"
+    },
+    "location": {
+      "column": 5,
+      "row": 19
+    },
+    "message": "Local variable `unused_var` is assigned to but never used",
+    "noqa_row": 19,
+    "url": "https://docs.astral.sh/ruff/rules/unused-variable"
+  },
+  {
+    "cell": null,
+    "code": "F841",
+    "end_location": {
+      "column": 19,
+      "row": 20
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": {
+      "applicability": "unsafe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 21
+          },
+          "location": {
+            "column": 1,
+            "row": 20
+          }
+        }
+      ],
+      "message": "Remove assignment to unused variable `another_unused`"
+    },
+    "location": {
+      "column": 5,
+      "row": 20
+    },
+    "message": "Local variable `another_unused` is assigned to but never used",
+    "noqa_row": 20,
+    "url": "https://docs.astral.sh/ruff/rules/unused-variable"
+  },
+  {
+    "cell": null,
+    "code": "E701",
+    "end_location": {
+      "column": 13,
+      "row": 21
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 12,
+      "row": 21
+    },
+    "message": "Multiple statements on one line (colon)",
+    "noqa_row": 21,
+    "url": "https://docs.astral.sh/ruff/rules/multiple-statements-on-one-line-colon"
+  },
+  {
+    "cell": null,
+    "code": "E702",
+    "end_location": {
+      "column": 31,
+      "row": 21
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 30,
+      "row": 21
+    },
+    "message": "Multiple statements on one line (semicolon)",
+    "noqa_row": 21,
+    "url": "https://docs.astral.sh/ruff/rules/multiple-statements-on-one-line-semicolon"
+  },
+  {
+    "cell": null,
+    "code": "E701",
+    "end_location": {
+      "column": 16,
+      "row": 36
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 15,
+      "row": 36
+    },
+    "message": "Multiple statements on one line (colon)",
+    "noqa_row": 36,
+    "url": "https://docs.astral.sh/ruff/rules/multiple-statements-on-one-line-colon"
+  },
+  {
+    "cell": null,
+    "code": "E701",
+    "end_location": {
+      "column": 14,
+      "row": 37
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 13,
+      "row": 37
+    },
+    "message": "Multiple statements on one line (colon)",
+    "noqa_row": 37,
+    "url": "https://docs.astral.sh/ruff/rules/multiple-statements-on-one-line-colon"
+  },
+  {
+    "cell": null,
+    "code": "F841",
+    "end_location": {
+      "column": 21,
+      "row": 50
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": {
+      "applicability": "unsafe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 51
+          },
+          "location": {
+            "column": 1,
+            "row": 50
+          }
+        }
+      ],
+      "message": "Remove assignment to unused variable `unused_inner_var`"
+    },
+    "location": {
+      "column": 5,
+      "row": 50
+    },
+    "message": "Local variable `unused_inner_var` is assigned to but never used",
+    "noqa_row": 50,
+    "url": "https://docs.astral.sh/ruff/rules/unused-variable"
+  },
+  {
+    "cell": null,
+    "code": "F841",
+    "end_location": {
+      "column": 16,
+      "row": 65
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": {
+      "applicability": "unsafe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 17,
+            "row": 65
+          },
+          "location": {
+            "column": 5,
+            "row": 65
+          }
+        }
+      ],
+      "message": "Remove assignment to unused variable `temp_result`"
+    },
+    "location": {
+      "column": 5,
+      "row": 65
+    },
+    "message": "Local variable `temp_result` is assigned to but never used",
+    "noqa_row": 65,
+    "url": "https://docs.astral.sh/ruff/rules/unused-variable"
+  },
+  {
+    "cell": null,
+    "code": "E701",
+    "end_location": {
+      "column": 23,
+      "row": 83
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 22,
+      "row": 83
+    },
+    "message": "Multiple statements on one line (colon)",
+    "noqa_row": 83,
+    "url": "https://docs.astral.sh/ruff/rules/multiple-statements-on-one-line-colon"
+  },
+  {
+    "cell": null,
+    "code": "E731",
+    "end_location": {
+      "column": 40,
+      "row": 88
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": {
+      "applicability": "unsafe",
+      "edits": [
+        {
+          "content": "def bad_lambda(x, y):\n    return x+y if x>y else y",
+          "end_location": {
+            "column": 40,
+            "row": 88
+          },
+          "location": {
+            "column": 1,
+            "row": 88
+          }
+        }
+      ],
+      "message": "Rewrite `bad_lambda` as a `def`"
+    },
+    "location": {
+      "column": 1,
+      "row": 88
+    },
+    "message": "Do not assign a `lambda` expression, use a `def`",
+    "noqa_row": 88,
+    "url": "https://docs.astral.sh/ruff/rules/lambda-assignment"
+  },
+  {
+    "cell": null,
+    "code": "E722",
+    "end_location": {
+      "column": 7,
+      "row": 102
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 1,
+      "row": 102
+    },
+    "message": "Do not use bare `except`",
+    "noqa_row": 102,
+    "url": "https://docs.astral.sh/ruff/rules/bare-except"
+  },
+  {
+    "cell": null,
+    "code": "E402",
+    "end_location": {
+      "column": 14,
+      "row": 107
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 1,
+      "row": 107
+    },
+    "message": "Module level import not at top of file",
+    "noqa_row": 107,
+    "url": "https://docs.astral.sh/ruff/rules/module-import-not-at-top-of-file"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 14,
+      "row": 107
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 108
+          },
+          "location": {
+            "column": 1,
+            "row": 107
+          }
+        }
+      ],
+      "message": "Remove unused import: `random`"
+    },
+    "location": {
+      "column": 8,
+      "row": 107
+    },
+    "message": "`random` imported but unused",
+    "noqa_row": 107,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "E702",
+    "end_location": {
+      "column": 5,
+      "row": 118
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 4,
+      "row": 118
+    },
+    "message": "Multiple statements on one line (semicolon)",
+    "noqa_row": 118,
+    "url": "https://docs.astral.sh/ruff/rules/multiple-statements-on-one-line-semicolon"
+  },
+  {
+    "cell": null,
+    "code": "E702",
+    "end_location": {
+      "column": 9,
+      "row": 118
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 8,
+      "row": 118
+    },
+    "message": "Multiple statements on one line (semicolon)",
+    "noqa_row": 118,
+    "url": "https://docs.astral.sh/ruff/rules/multiple-statements-on-one-line-semicolon"
+  },
+  {
+    "cell": null,
+    "code": "E712",
+    "end_location": {
+      "column": 11,
+      "row": 121
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": {
+      "applicability": "unsafe",
+      "edits": [
+        {
+          "content": "x",
+          "end_location": {
+            "column": 11,
+            "row": 121
+          },
+          "location": {
+            "column": 4,
+            "row": 121
+          }
+        }
+      ],
+      "message": "Replace with `x`"
+    },
+    "location": {
+      "column": 4,
+      "row": 121
+    },
+    "message": "Avoid equality comparisons to `True`; use `x:` for truth checks",
+    "noqa_row": 121,
+    "url": "https://docs.astral.sh/ruff/rules/true-false-comparison"
+  },
+  {
+    "cell": null,
+    "code": "E402",
+    "end_location": {
+      "column": 19,
+      "row": 125
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 1,
+      "row": 125
+    },
+    "message": "Module level import not at top of file",
+    "noqa_row": 125,
+    "url": "https://docs.astral.sh/ruff/rules/module-import-not-at-top-of-file"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 19,
+      "row": 125
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 126
+          },
+          "location": {
+            "column": 1,
+            "row": 125
+          }
+        }
+      ],
+      "message": "Remove unused import: `collections`"
+    },
+    "location": {
+      "column": 8,
+      "row": 125
+    },
+    "message": "`collections` imported but unused",
+    "noqa_row": 125,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F405",
+    "end_location": {
+      "column": 23,
+      "row": 136
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 10,
+      "row": 136
+    },
+    "message": "`some_function` may be undefined, or defined from star imports",
+    "noqa_row": 136,
+    "url": "https://docs.astral.sh/ruff/rules/undefined-local-with-import-star-usage"
+  },
+  {
+    "cell": null,
+    "code": "F405",
+    "end_location": {
+      "column": 48,
+      "row": 136
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 24,
+      "row": 136
+    },
+    "message": "`very_long_parameter_name` may be undefined, or defined from star imports",
+    "noqa_row": 136,
+    "url": "https://docs.astral.sh/ruff/rules/undefined-local-with-import-star-usage"
+  },
+  {
+    "cell": null,
+    "code": "F405",
+    "end_location": {
+      "column": 76,
+      "row": 136
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 49,
+      "row": 136
+    },
+    "message": "`another_very_long_parameter` may be undefined, or defined from star imports",
+    "noqa_row": 136,
+    "url": "https://docs.astral.sh/ruff/rules/undefined-local-with-import-star-usage"
+  },
+  {
+    "cell": null,
+    "code": "F405",
+    "end_location": {
+      "column": 113,
+      "row": 136
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 77,
+      "row": 136
+    },
+    "message": "`third_parameter_that_makes_line_long` may be undefined, or defined from star imports",
+    "noqa_row": 136,
+    "url": "https://docs.astral.sh/ruff/rules/undefined-local-with-import-star-usage"
+  },
+  {
+    "cell": null,
+    "code": "F405",
+    "end_location": {
+      "column": 126,
+      "row": 136
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 114,
+      "row": 136
+    },
+    "message": "`fourth_param` may be undefined, or defined from star imports",
+    "noqa_row": 136,
+    "url": "https://docs.astral.sh/ruff/rules/undefined-local-with-import-star-usage"
+  },
+  {
+    "cell": null,
+    "code": "F405",
+    "end_location": {
+      "column": 26,
+      "row": 148
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 22,
+      "row": 148
+    },
+    "message": "`name` may be undefined, or defined from star imports",
+    "noqa_row": 148,
+    "url": "https://docs.astral.sh/ruff/rules/undefined-local-with-import-star-usage"
+  },
+  {
+    "cell": null,
+    "code": "F405",
+    "end_location": {
+      "column": 54,
+      "row": 148
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 49,
+      "row": 148
+    },
+    "message": "`count` may be undefined, or defined from star imports",
+    "noqa_row": 148,
+    "url": "https://docs.astral.sh/ruff/rules/undefined-local-with-import-star-usage"
+  },
+  {
+    "cell": null,
+    "code": "F405",
+    "end_location": {
+      "column": 29,
+      "row": 151
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 5,
+      "row": 151
+    },
+    "message": "`very_long_condition_name` may be undefined, or defined from star imports",
+    "noqa_row": 151,
+    "url": "https://docs.astral.sh/ruff/rules/undefined-local-with-import-star-usage"
+  },
+  {
+    "cell": null,
+    "code": "F405",
+    "end_location": {
+      "column": 61,
+      "row": 151
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 34,
+      "row": 151
+    },
+    "message": "`another_long_condition_name` may be undefined, or defined from star imports",
+    "noqa_row": 151,
+    "url": "https://docs.astral.sh/ruff/rules/undefined-local-with-import-star-usage"
+  },
+  {
+    "cell": null,
+    "code": "F405",
+    "end_location": {
+      "column": 82,
+      "row": 151
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 67,
+      "row": 151
+    },
+    "message": "`third_condition` may be undefined, or defined from star imports",
+    "noqa_row": 151,
+    "url": "https://docs.astral.sh/ruff/rules/undefined-local-with-import-star-usage"
+  },
+  {
+    "cell": null,
+    "code": "F405",
+    "end_location": {
+      "column": 103,
+      "row": 151
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 87,
+      "row": 151
+    },
+    "message": "`fourth_condition` may be undefined, or defined from star imports",
+    "noqa_row": 151,
+    "url": "https://docs.astral.sh/ruff/rules/undefined-local-with-import-star-usage"
+  },
+  {
+    "cell": null,
+    "code": "F405",
+    "end_location": {
+      "column": 23,
+      "row": 155
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 10,
+      "row": 155
+    },
+    "message": "`function_call` may be undefined, or defined from star imports",
+    "noqa_row": 155,
+    "url": "https://docs.astral.sh/ruff/rules/undefined-local-with-import-star-usage"
+  },
+  {
+    "cell": null,
+    "code": "F405",
+    "end_location": {
+      "column": 36,
+      "row": 155
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 24,
+      "row": 155
+    },
+    "message": "`argument_one` may be undefined, or defined from star imports",
+    "noqa_row": 155,
+    "url": "https://docs.astral.sh/ruff/rules/undefined-local-with-import-star-usage"
+  },
+  {
+    "cell": null,
+    "code": "F405",
+    "end_location": {
+      "column": 50,
+      "row": 155
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 38,
+      "row": 155
+    },
+    "message": "`argument_two` may be undefined, or defined from star imports",
+    "noqa_row": 155,
+    "url": "https://docs.astral.sh/ruff/rules/undefined-local-with-import-star-usage"
+  },
+  {
+    "cell": null,
+    "code": "F405",
+    "end_location": {
+      "column": 66,
+      "row": 155
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 52,
+      "row": 155
+    },
+    "message": "`argument_three` may be undefined, or defined from star imports",
+    "noqa_row": 155,
+    "url": "https://docs.astral.sh/ruff/rules/undefined-local-with-import-star-usage"
+  },
+  {
+    "cell": null,
+    "code": "F405",
+    "end_location": {
+      "column": 16,
+      "row": 159
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 5,
+      "row": 159
+    },
+    "message": "`condition_a` may be undefined, or defined from star imports",
+    "noqa_row": 159,
+    "url": "https://docs.astral.sh/ruff/rules/undefined-local-with-import-star-usage"
+  },
+  {
+    "cell": null,
+    "code": "F405",
+    "end_location": {
+      "column": 20,
+      "row": 160
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 9,
+      "row": 160
+    },
+    "message": "`condition_b` may be undefined, or defined from star imports",
+    "noqa_row": 160,
+    "url": "https://docs.astral.sh/ruff/rules/undefined-local-with-import-star-usage"
+  },
+  {
+    "cell": null,
+    "code": "F405",
+    "end_location": {
+      "column": 20,
+      "row": 161
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 9,
+      "row": 161
+    },
+    "message": "`condition_c` may be undefined, or defined from star imports",
+    "noqa_row": 161,
+    "url": "https://docs.astral.sh/ruff/rules/undefined-local-with-import-star-usage"
+  },
+  {
+    "cell": null,
+    "code": "F405",
+    "end_location": {
+      "column": 59,
+      "row": 165
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 9,
+      "row": 165
+    },
+    "message": "`very_long_variable_name_that_exceeds_normal_length` may be undefined, or defined from star imports",
+    "noqa_row": 165,
+    "url": "https://docs.astral.sh/ruff/rules/undefined-local-with-import-star-usage"
+  },
+  {
+    "cell": null,
+    "code": "F405",
+    "end_location": {
+      "column": 117,
+      "row": 165
+    },
+    "filename": "test_files/broken_python.py",
+    "fix": null,
+    "location": {
+      "column": 64,
+      "row": 165
+    },
+    "message": "`another_very_long_condition_that_makes_this_multiline` may be undefined, or defined from star imports",
+    "noqa_row": 165,
+    "url": "https://docs.astral.sh/ruff/rules/undefined-local-with-import-star-usage"
+  }
+]

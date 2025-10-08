@@ -31,7 +31,7 @@ generate-references:
 	@echo "✅ Reference outputs generated in test_files/outputs/"
 
 test: init-shed build-shed
-	cd front && npm test
+	cd front && npm run test:run
 
 clean:
 	rm -rf front/node_modules

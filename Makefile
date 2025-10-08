@@ -22,12 +22,12 @@ init-shed:
 
 build-shed:
 	@echo "📦 Building Shed UMD bundle..."
-	cd front && npm run build
+	cd front && npm run build:lib
 	@echo "✅ Shed bundle built!"
 
 generate-references:
 	@echo "🔧 Generating local tool reference outputs..."
-	python scripts/format_local.py
+	python scripts/compare_configurations.py
 	@echo "✅ Reference outputs generated in test_files/outputs/"
 
 test: init-shed build-shed

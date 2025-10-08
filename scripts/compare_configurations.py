@@ -3,11 +3,12 @@
 Compare different tool configurations to show their distinct behaviors.
 """
 
+import sys
 import subprocess
 import black
 from pathlib import Path
 
-def main():
+def main(verify_only=False):
     test_file = Path(__file__).parent.parent / "test_files" / "broken_python.py"
     original_code = test_file.read_text()
     outputs_dir = Path(__file__).parent.parent / "test_files" / "outputs"
@@ -69,7 +70,7 @@ def main():
     print(f"🏠 Shed (with refactor):        {len(shed_result_with_refactor):4d} chars")
     print()
 
-    # Save distinct outputs for analysis
+    # Prepare outputs map
     outputs = {
         "ruff_format_only.py": ruff_format_only,
         "black_only.py": black_only,
@@ -79,11 +80,46 @@ def main():
         "shed_format_no_refactor.py": shed_result_no_refactor,
         "shed_format_with_refactor.py": shed_result_with_refactor,
     }
-    for filename, content in outputs.items():
-        (outputs_dir / filename).write_text(content)
 
-    print("💾 Saved all configurations to test_files/outputs/")
-    print()
+    if verify_only:
+        # Verification mode: compare generated outputs with saved files
+        print("🔍 Verifying reference files are up-to-date...")
+        mismatches = []
+
+        for filename, generated_content in outputs.items():
+            reference_file = outputs_dir / filename
+            if not reference_file.exists():
+                mismatches.append(f"  ❌ {filename}: File does not exist")
+                continue
+
+            saved_content = reference_file.read_text()
+            if generated_content != saved_content:
+                mismatches.append(
+                    f"  ❌ {filename}: Content differs "
+                    f"(generated: {len(generated_content)} chars, saved: {len(saved_content)} chars)"
+                )
+            else:
+                print(f"  ✅ {filename}")
+
+        if mismatches:
+            print()
+            print("❌ Reference files are outdated:")
+            for mismatch in mismatches:
+                print(mismatch)
+            print()
+            print("Run 'make generate-references' to update them.")
+            sys.exit(1)
+        else:
+            print()
+            print("✅ All reference files are up-to-date!")
+            return
+    else:
+        # Generate mode: save outputs to files
+        for filename, content in outputs.items():
+            (outputs_dir / filename).write_text(content)
+
+        print("💾 Saved all configurations to test_files/outputs/")
+        print()
     print("🔍 Verifying all outputs are unique...")
 
     # Build a map of all outputs with their names
@@ -130,4 +166,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # Check for --verify flag
+    verify_only = "--verify" in sys.argv
+    main(verify_only=verify_only)

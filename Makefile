@@ -1,4 +1,4 @@
-.PHONY: help install-puppeteer-deps build-shed test init-shed generate-references
+.PHONY: help install-puppeteer-deps build-shed test init-shed generate-references verify-references
 
 help:
 	@echo "make install-puppeteer-deps"
@@ -6,6 +6,7 @@ help:
 	@echo "make init-shed"
 	@echo "make build-shed"
 	@echo "make generate-references"
+	@echo "make verify-references"
 	@echo "make test"
 	@echo "make clean"
 
@@ -29,6 +30,10 @@ generate-references:
 	@echo "🔧 Generating local tool reference outputs..."
 	python scripts/compare_configurations.py
 	@echo "✅ Reference outputs generated in test_files/outputs/"
+
+verify-references:
+	@echo "🔍 Verifying reference files are up-to-date..."
+	python scripts/compare_configurations.py --verify
 
 test: init-shed build-shed
 	cd front && npm run test:run

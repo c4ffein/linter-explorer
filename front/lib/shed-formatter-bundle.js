@@ -11,13 +11,48 @@ let ruffWorkspace = null;
 // Initialize Ruff WASM for the subprocess bridge
 async function initializeRuffWASM() {
   if (!ruffWorkspace) {
-    // Load Ruff WASM from CDN
+    // Load Ruff WASM from CDN with Shed-compatible configuration
     const ruffScript = document.createElement('script');
     ruffScript.type = 'module';
     ruffScript.textContent = `
-      import init, { Workspace } from 'https://cdn.jsdelivr.net/npm/@astral-sh/ruff-wasm-web@0.13.0/ruff_wasm.js';
+      import init, { Workspace, PositionEncoding } from 'https://cdn.jsdelivr.net/npm/@astral-sh/ruff-wasm-web@0.14.0/ruff_wasm.js';
       await init();
-      window.ruffWorkspace = new Workspace({});
+
+      // Shed's exact rule list from vendor/shed/src/shed/__init__.py _RUFF_RULES
+      // These are the ONLY rules Shed checks (E731 is explicitly NOT included)
+      window.SHED_RUFF_RULES = [
+        'I',      // isort
+        'UP',     // pyupgrade
+        'F841',   // unused-variable
+        'F901',   // raise NotImplemented -> raise NotImplementedError
+        'E711',   // == None -> is None
+        'E713',   // not x in y -> x not in y
+        'E714',   // not x is y -> x is not y
+        'C400', 'C401', 'C402', 'C403', 'C404', 'C405', 'C406',
+        'C408', 'C409', 'C410', 'C411', 'C413', 'C416', 'C417', 'C418', 'C419',
+        'SIM101', // duplicate-isinstance-call
+        'B011',   // assert False -> raise
+        'F401'    // unused-import (added by Shed when _remove_unused_imports=True)
+      ];
+
+      // Configure Ruff workspace with Shed's settings
+      const config = {
+        lint: {
+          isort: {
+            'combine-as-imports': true,
+            'known-first-party': []
+          },
+          'extend-safe-fixes': [
+            'F841', 'C400', 'C401', 'C402', 'C403', 'C404', 'C405', 'C406',
+            'C408', 'C409', 'C410', 'C411', 'C416', 'C417', 'C418', 'C419',
+            'SIM101', 'E711', 'UP031', 'C413', 'B011'
+          ]
+        }
+      };
+
+      console.log('🔧 Creating Ruff workspace with Shed config:', JSON.stringify(config, null, 2));
+      // Ruff 0.14.0 requires position_encoding parameter (use UTF-8)
+      window.ruffWorkspace = new Workspace(config, PositionEncoding.Utf8);
       window.ruffReady = true;
     `;
     document.head.appendChild(ruffScript);
@@ -84,12 +119,133 @@ export async function formatWithShed(pythonCode) {
     py.globals.set('js_ruff_format_sync', py.toPy((code, args) => {
       console.log('🌉 Python → JavaScript bridge called!');
       console.log('📝 Input code length:', code.length);
-      console.log('⚙️ Ruff args:', args);
+
+      // Convert Python list to JavaScript array
+      const argsArray = Array.isArray(args) ? args : (args?.toJs?.() || []);
+      const argsStr = argsArray.join(' ');
+      console.log('⚙️ Ruff args:', argsStr);
 
       try {
-        // Call our WASM Ruff with the code
-        const result = ruffWorkspace.format(code, { extension: 'py' });
-        console.log('✅ WASM Ruff completed, returning to Python');
+        // Parse the Ruff command args to determine what operation to do
+        const isCheck = argsArray.includes('check');
+        const isFixOnly = argsArray.includes('--fix-only');
+
+        let result;
+        if (isCheck && isFixOnly) {
+          // This is `ruff check --fix-only` - apply linter fixes iteratively
+          // Ruff's strategy: apply non-overlapping fixes, then re-run until convergence
+          // See: https://github.com/astral-sh/ruff/issues/660
+          console.log('🔧 Applying Ruff fixes (check --fix-only)...');
+
+          let currentCode = code;
+          let totalFixesApplied = 0;
+          let passes = 0;
+          const MAX_PASSES = 100;
+
+          while (passes < MAX_PASSES) {
+            passes++;
+            const checkResult = ruffWorkspace.check(currentCode);
+
+            // Collect all safe fix edits from this pass, filtering to Shed's rule list
+            const allEdits = [];
+            for (const diagnostic of checkResult) {
+              // Filter: only apply fixes for rules in Shed's list (excludes E731, etc.)
+              const ruleCode = diagnostic.code;
+              const isAllowedRule = window.SHED_RUFF_RULES.some(rule => {
+                // Match exact rule (e.g., 'F841') or rule prefix (e.g., 'I' matches 'I001')
+                return ruleCode === rule || ruleCode?.startsWith(rule);
+              });
+
+              if (!isAllowedRule) {
+                continue; // Skip diagnostics not in Shed's rule list
+              }
+
+              if (diagnostic.fix && diagnostic.fix.edits) {
+                const applicability = diagnostic.fix.applicability;
+                if (!applicability || applicability === 'safe') {
+                  for (const edit of diagnostic.fix.edits) {
+                    allEdits.push({
+                      startRow: edit.location.row,
+                      startCol: edit.location.column,
+                      endRow: edit.end_location.row,
+                      endCol: edit.end_location.column,
+                      content: edit.content || ''
+                    });
+                  }
+                }
+              }
+            }
+
+            if (allEdits.length === 0) {
+              break; // Converged - no more fixes to apply
+            }
+
+            // Sort edits from end to beginning to preserve positions
+            allEdits.sort((a, b) => {
+              if (b.startRow !== a.startRow) return b.startRow - a.startRow;
+              if (b.startCol !== a.startCol) return b.startCol - a.startCol;
+              if (b.endRow !== a.endRow) return b.endRow - a.endRow;
+              return b.endCol - a.endCol;
+            });
+
+            // Filter to only non-overlapping edits for this pass
+            const nonOverlappingEdits = [];
+            let lastKeptStartRow = Infinity;
+            let lastKeptStartCol = Infinity;
+
+            for (const edit of allEdits) {
+              const noOverlap = edit.endRow < lastKeptStartRow ||
+                               (edit.endRow === lastKeptStartRow && edit.endCol <= lastKeptStartCol);
+
+              if (noOverlap) {
+                nonOverlappingEdits.push(edit);
+                lastKeptStartRow = edit.startRow;
+                lastKeptStartCol = edit.startCol;
+              }
+            }
+
+            if (nonOverlappingEdits.length === 0) {
+              break; // No non-overlapping fixes available
+            }
+
+            // Apply the non-overlapping fixes
+            const lines = currentCode.split('\n');
+
+            for (const edit of nonOverlappingEdits) {
+              const startRow = edit.startRow - 1;
+              const startCol = edit.startCol - 1;
+              const endRow = edit.endRow - 1;
+              const endCol = edit.endCol - 1;
+
+              if (startRow === endRow) {
+                const line = lines[startRow];
+                lines[startRow] = line.substring(0, startCol) + edit.content + line.substring(endCol);
+              } else {
+                const firstLinePart = lines[startRow].substring(0, startCol);
+                const lastLinePart = lines[endRow].substring(endCol);
+                const replacement = firstLinePart + edit.content + lastLinePart;
+                const replacementLines = replacement.split('\n');
+                lines.splice(startRow, endRow - startRow + 1, ...replacementLines);
+              }
+            }
+
+            currentCode = lines.join('\n');
+            totalFixesApplied += nonOverlappingEdits.length;
+          }
+
+          result = currentCode;
+          console.log(`✅ Applied ${totalFixesApplied} fix(es) in ${passes} pass(es): ${code.length} → ${result.length} chars`);
+        } else if (argsArray.includes('format')) {
+          // This is `ruff format` - just formatting
+          console.log('🎨 Applying Ruff format...');
+          result = ruffWorkspace.format(code, { extension: 'py' });
+        } else {
+          // Default to format
+          console.log('🎨 Default to Ruff format...');
+          result = ruffWorkspace.format(code, { extension: 'py' });
+        }
+
+        console.log('✅ WASM Ruff completed, result length:', result?.length || code.length);
         return result || code;
       } catch (error) {
         console.error('❌ WASM Ruff failed:', error);
@@ -139,14 +295,33 @@ subprocess.run = sync_mock_subprocess_run
 print("✅ Subprocess bridge installed!")
 `;
 
+    // Install the mock FIRST
+    console.log('🔧 Installing subprocess mock...');
     py.runPython(mockSubprocessScript);
+    console.log('✅ Subprocess mock installed');
+
+    // Now import and patch subprocess BEFORE loading Shed
+    console.log('🔧 Importing subprocess to verify mock...');
+    const verifyResult = py.runPython(`
+import sys
+import subprocess
+
+# Verify mock is active
+print(f"✅ subprocess.run name: {subprocess.run.__name__}")
+subprocess.run.__name__
+    `);
+    console.log('✅ Subprocess mock verified, name =', verifyResult);
 
     // Now run the REAL Shed source with our mocked subprocess
+    // IMPORTANT: Remove subprocess import from Shed since we already imported and mocked it
+    const shedWithoutSubprocessImport = shedAlgorithm.replace(/^import subprocess$/m, '# import subprocess  # Already imported and mocked above');
+
     const realShedScript = `
 # Input code
 source_code = """${pythonCode.replace(/"""/g, '\\"\\"\\"')}"""
 
-${shedAlgorithm}
+# Shed source code (subprocess import removed - already mocked above)
+${shedWithoutSubprocessImport}
 
 # Call the real shed function
 result = shed(source_code)

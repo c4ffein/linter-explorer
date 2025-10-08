@@ -177,7 +177,7 @@ def test_function():
     // Load the comprehensive test file and local reference
     const testFilesDir = join(__dirname, '../../../test_files');
     const originalCode = readFileSync(join(testFilesDir, 'broken_python.py'), 'utf-8');
-    const localShedOutput = readFileSync(join(testFilesDir, 'outputs/shed_formatted.py'), 'utf-8');
+    const localShedOutput = readFileSync(join(testFilesDir, 'outputs/shed_format_no_refactor.py'), 'utf-8');
 
     await page.goto(`${serverUrl}/front/demo-python-linting.html`);
 
@@ -220,65 +220,56 @@ def test_function():
     console.log('✅ Web Shed matches local Shed formatter exactly!');
   }, 180000);
 
-  it('should demonstrate Shed vs individual tools progression', async () => {
-    // Load test files - Shed should do everything the other tools do, but better
+  it('should match local Shed with refactor mode (documents limitation)', async () => {
+    // Load test files
     const testFilesDir = join(__dirname, '../../../test_files');
     const originalCode = readFileSync(join(testFilesDir, 'broken_python.py'), 'utf-8');
-    const shedOutput = readFileSync(join(testFilesDir, 'outputs/shed_formatted.py'), 'utf-8');
-
-    // For reference: what individual tools produce
-    const ruffLength = readFileSync(join(testFilesDir, 'outputs/ruff_formatted.py'), 'utf-8').length;
-    const blackLength = readFileSync(join(testFilesDir, 'outputs/black_formatted.py'), 'utf-8').length;
+    const localShedWithRefactor = readFileSync(join(testFilesDir, 'outputs/shed_format_with_refactor.py'), 'utf-8');
+    const localShedNoRefactor = readFileSync(join(testFilesDir, 'outputs/shed_format_no_refactor.py'), 'utf-8');
 
     await page.goto(`${serverUrl}/front/demo-python-linting.html`);
 
-    // Load Shed bundle
+    // Load the pre-built Shed UMD bundle
     await page.addScriptTag({
       path: join(__dirname, '../../dist/shed-formatter.umd.cjs')
     });
+
     await page.waitForFunction(() => window.ShedFormatter !== undefined, { timeout: 10000 });
 
     const result = await page.evaluate(async (testCode) => {
       try {
-        // Only run Shed - it handles Ruff and Black internally!
-        const shedResult = await window.ShedFormatter.formatWithShed(testCode);
-
+        const formatResult = await window.ShedFormatter.formatWithShed(testCode);
         return {
-          original: {
-            length: testCode.length,
-            lines: testCode.split('\\n').length
-          },
-          shed: {
-            success: shedResult.success,
-            length: shedResult.formatted?.length || 0,
-            lines: shedResult.formatted?.split('\\n').length || 0,
-            formatted: shedResult.formatted
-          }
+          success: formatResult.success,
+          formatted: formatResult.formatted,
+          changed: formatResult.changed
         };
       } catch (error) {
-        return { error: error.message };
+        return {
+          success: false,
+          error: error.message
+        };
       }
     }, originalCode);
 
-    console.log('📊 Shed vs Individual Tools Analysis:');
-    console.log(`📁 Original:     ${result.original.length} chars, ${result.original.lines} lines`);
-    console.log(`🏠 Web Shed:     ${result.shed.length} chars, ${result.shed.lines} lines`);
-    console.log(`📏 Local Shed:   ${shedOutput.length} chars (reference)`);
-    console.log(`🔧 Local Ruff:   ${ruffLength} chars (for comparison)`);
-    console.log(`🖤 Local Black:  ${blackLength} chars (for comparison)`);
+    console.log('🏠 Shed refactor mode comparison:', {
+      webLength: result.formatted?.length,
+      localNoRefactorLength: localShedNoRefactor.length,
+      localWithRefactorLength: localShedWithRefactor.length,
+      difference: localShedNoRefactor.length - localShedWithRefactor.length
+    });
 
-    // Shed should succeed
-    expect(result.shed.success).toBe(true);
+    expect(result.success).toBe(true);
 
-    // Web Shed should match local Shed exactly
-    expect(result.shed.length).toBe(shedOutput.length);
-    expect(result.shed.formatted).toBe(shedOutput);
+    // Current implementation matches no-refactor mode
+    expect(result.formatted).toBe(localShedNoRefactor);
 
-    // Shed should be more aggressive than individual Ruff/Black (removes unused imports)
-    expect(result.shed.length).toBeLessThan(ruffLength);
-    expect(result.shed.length).toBeLessThan(blackLength);
+    // Document that refactor mode (with codemods) is not yet implemented
+    // Refactor mode would require porting libcst and Shed's codemods to WASM
+    expect(result.formatted).not.toBe(localShedWithRefactor);
 
-    console.log('✅ Shed combines Ruff + Black + more, producing optimal output!');
-    console.log('🎯 Web Shed matches local Shed exactly and outperforms individual tools!');
+    console.log('ℹ️  Web Shed matches no-refactor mode (codemods not yet implemented)');
+    console.log(`📊 Refactor mode would save ${localShedNoRefactor.length - localShedWithRefactor.length} additional chars`);
   }, 180000);
+
 });

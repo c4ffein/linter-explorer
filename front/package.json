@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "dev:host": "vite --host",
-    "build": "vite build",
+    "build": "npm run build:app",
+    "build:app": "vite build",
+    "build:lib": "BUILD_MODE=lib vite build",
     "lint:prettier": "prettier . \"!libs\" --write",
     "lint:eslint": "eslint . --ext js,jsx --max-warnings 0",
     "lint": "npm run lint:prettier && npm run lint:eslint",
@@ -17,7 +19,7 @@
     "test:watch": "vitest --watch"
   },
   "dependencies": {
-    "@astral-sh/ruff-wasm-web": "^0.13.0",
+    "@astral-sh/ruff-wasm-web": "^0.14.0",
     "express": "^5.1.0",
     "pyodide": "^0.28.2",
     "react": "^18.3.1",

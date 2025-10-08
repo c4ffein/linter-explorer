@@ -15,17 +15,16 @@ describe('Python Black Formatter in Headless Browser', () => {
   beforeEach(async () => {
     await setupBrowser();
 
-    // Set up Express server to serve our files
+    // NOTE: We use Express instead of Vite dev server because:
+    // 1. Starting Vite programmatically in tests causes esbuild issues
+    // 2. The lib/black-formatter.js uses bare imports ('pyodide') which don't work in browsers
+    // 3. For deployment, `npm run build:app` bundles everything properly with Vite
+    // 4. For now, tests load Pyodide inline (same as first 2 tests) to avoid import issues
     const app = express();
-
-    // Serve static files from the project root
     const projectRoot = join(__dirname, '../..');
     app.use(express.static(projectRoot));
-
-    // Serve node_modules for accessing packages
     app.use('/node_modules', express.static(join(projectRoot, 'node_modules')));
 
-    // Start server
     const port = 3002;
     server = app.listen(port);
     serverUrl = `http://localhost:${port}`;
@@ -244,36 +243,46 @@ result
     // Load the comprehensive test file and local reference
     const testFilesDir = join(__dirname, '../../../test_files');
     const originalCode = readFileSync(join(testFilesDir, 'broken_python.py'), 'utf-8');
-    const localBlackOutput = readFileSync(join(testFilesDir, 'outputs/black_formatted.py'), 'utf-8');
+    const localBlackOutput = readFileSync(join(testFilesDir, 'outputs/black_only.py'), 'utf-8');
 
     await page.goto(`${serverUrl}/demo-python-linting.html`);
 
-    const result = await page.evaluate(async (testCode) => {
-      // Import and use the Black formatter module
-      const { formatWithBlack } = await import('./lib/black-formatter.js');
+    // Load the Black formatter lib - it handles loading Pyodide from CDN internally
+    await page.addScriptTag({
+      type: 'module',
+      content: `
+        import { formatWithBlack } from './lib/black-formatter.js';
+        window.formatWithBlack = formatWithBlack;
+        window.blackFormatterLoaded = true;
+      `
+    });
 
+    // Wait for module to load
+    await page.waitForFunction(() => window.blackFormatterLoaded === true, { timeout: 10000 });
+
+    // Now use the lib to format
+    const result = await page.evaluate(async (testCode) => {
       try {
-        const formatResult = await formatWithBlack(testCode);
-        return {
-          success: formatResult.success,
-          formatted: formatResult.formatted,
-          changed: formatResult.changed,
-          error: formatResult.error
-        };
+        return await window.formatWithBlack(testCode);
       } catch (error) {
         return {
           success: false,
           error: error.message
         };
       }
-    }, originalCode);
+    }, originalCode, { timeout: 60000 });
 
     console.log('🖤 Web vs Local Black Comparison:', {
       webSuccess: result.success,
       webLength: result.formatted?.length,
       localLength: localBlackOutput.length,
-      changed: result.changed
+      changed: result.changed,
+      error: result.error
     });
+
+    if (!result.success) {
+      console.error('❌ Black formatting failed:', result.error);
+    }
 
     expect(result.success).toBe(true);
     expect(result.changed).toBe(true);

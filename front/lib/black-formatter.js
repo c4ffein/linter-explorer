@@ -1,18 +1,42 @@
-import { loadPyodide } from 'pyodide';
-
 let pyodide = null;
 let isBlackInitialized = false;
 
+// Load Pyodide from CDN dynamically
+async function loadPyodideFromCDN() {
+  // Check if loadPyodide is already available globally
+  if (typeof window !== 'undefined' && window.loadPyodide) {
+    return window.loadPyodide;
+  }
+
+  // Load Pyodide script from CDN
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/pyodide/v0.28.2/full/pyodide.js';
+    script.onload = () => {
+      if (window.loadPyodide) {
+        resolve(window.loadPyodide);
+      } else {
+        reject(new Error('loadPyodide not found after loading script'));
+      }
+    };
+    script.onerror = () => reject(new Error('Failed to load Pyodide from CDN'));
+    document.head.appendChild(script);
+  });
+}
+
 export async function initializeBlack() {
   if (!isBlackInitialized) {
-    console.log('🔄 Loading Pyodide WASM environment...');
+    console.log('🔄 Loading Pyodide WASM environment from CDN...');
+
+    const loadPyodide = await loadPyodideFromCDN();
+
     pyodide = await loadPyodide({
       indexURL: "https://cdn.jsdelivr.net/pyodide/v0.28.2/full/"
     });
 
     console.log('📦 Installing Black formatter...');
     await pyodide.loadPackage("micropip");
-    await pyodide.runPython(`
+    await pyodide.runPythonAsync(`
       import micropip
       await micropip.install("black")
       import black
@@ -31,7 +55,7 @@ export async function formatWithBlack(pythonCode, options = {}) {
 
     // Set up Black formatting options
     const lineLength = options.lineLength || 88;
-    const skipStringNormalization = options.skipStringNormalization || false;
+    const stringNormalization = options.skipStringNormalization ? false : true; // Inverted logic
 
     // Create Python code to format the input
     const formattingScript = `
@@ -45,7 +69,7 @@ try:
     # Configure Black mode
     mode = black.Mode(
         line_length=${lineLength},
-        skip_string_normalization=${skipStringNormalization ? 'True' : 'False'}
+        string_normalization=${stringNormalization ? 'True' : 'False'}
     )
 
     # Format the code

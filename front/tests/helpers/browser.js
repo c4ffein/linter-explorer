@@ -9,6 +9,16 @@ export async function setupBrowser() {
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
   page = await browser.newPage();
+
+  // Capture browser console logs
+  page.on('console', msg => {
+    const type = msg.type();
+    const text = msg.text();
+    if (type === 'log') console.log('🌐', text);
+    else if (type === 'error') console.error('🌐', text);
+    else if (type === 'warn') console.warn('🌐', text);
+  });
+
   return { browser, page };
 }
 

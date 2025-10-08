@@ -45,23 +45,17 @@ def main():
     ruff_fix_with_imports = result.stdout
     print(f"   Result: {len(ruff_fix_with_imports)} chars")
 
-    # 5. Real Shed formatting
-    print("5️⃣ Shed format...")
-    import tempfile
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
-        f.write(original_code)
-        f.flush()
-        temp_path = f.name
+    # 5. Shed formatting (both with and without refactor)
+    print("5️⃣ Shed format (no refactor)...")
+    import sys
+    sys.path.insert(0, str(Path(__file__).parent.parent / "vendor" / "shed" / "src"))
+    import shed as shed_module
+    shed_result_no_refactor = shed_module.shed(original_code, refactor=False)
+    print(f"   Result: {len(shed_result_no_refactor)} chars")
 
-    result = subprocess.run(['shed', '--refactor', temp_path],
-                          capture_output=True, text=True)
-    if result.returncode == 0:
-        shed_result = Path(temp_path).read_text()
-    else:
-        shed_result = original_code  # fallback if shed fails
-
-    Path(temp_path).unlink(missing_ok=True)
-    print(f"   Result: {len(shed_result)} chars")
+    print("6️⃣ Shed format (with refactor)...")
+    shed_result_with_refactor = shed_module.shed(original_code, refactor=True)
+    print(f"   Result: {len(shed_result_with_refactor)} chars")
 
 
     print()
@@ -71,47 +65,9 @@ def main():
     print(f"🖤 Black only:                  {len(black_only):4d} chars")
     print(f"⚡ Ruff fix (no imports):       {len(ruff_fix_no_imports):4d} chars")
     print(f"🧹 Ruff fix (with imports):     {len(ruff_fix_with_imports):4d} chars")
-    print(f"🏠 Shed format:                 {len(shed_result):4d} chars")
+    print(f"🏠 Shed (no refactor):          {len(shed_result_no_refactor):4d} chars")
+    print(f"🏠 Shed (with refactor):        {len(shed_result_with_refactor):4d} chars")
     print()
-
-    # Check which ones are identical
-    if ruff_format_only == black_only:
-        print("✅ Ruff format matches Black exactly (as designed)")
-    else:
-        print("❌ Ruff format differs from Black!")
-
-    if len(ruff_fix_with_imports) < len(black_only):
-        reduction = len(black_only) - len(ruff_fix_with_imports)
-        print(f"✅ Ruff with import removal saves {reduction} chars ({reduction/len(black_only)*100:.1f}%)")
-
-    # Assert that all three main formatters produce different results
-    print()
-    print("🔍 Verifying formatter differences...")
-    try:
-        assert black_only != ruff_format_only, "Black and Ruff should produce different results"
-        print("✅ Black ≠ Ruff")
-    except AssertionError:
-        print("❌ Black == Ruff (unexpectedly identical)")
-
-    try:
-        assert black_only != shed_result, "Black and Shed should produce different results"
-        print("✅ Black ≠ Shed")
-    except AssertionError:
-        print("❌ Black == Shed (unexpectedly identical)")
-
-    try:
-        assert ruff_format_only != shed_result, "Ruff and Shed should produce different results"
-        print("✅ Ruff ≠ Shed")
-    except AssertionError:
-        print("❌ Ruff == Shed (unexpectedly identical)")
-
-    # Final assertion that all three are different
-    try:
-        assert black_only != ruff_format_only != shed_result, "All three formatters should produce different results"
-        assert black_only != shed_result, "Black and Shed should be different"
-        print("🎯 SUCCESS: All formatters produce distinct results!")
-    except AssertionError as e:
-        print(f"❌ FAILED: Some formatters produce identical results - {e}")
 
     # Save distinct outputs for analysis
     outputs = {
@@ -119,14 +75,59 @@ def main():
         "black_only.py": black_only,
         "ruff_fix_no_imports.py": ruff_fix_no_imports,
         "ruff_fix_with_imports.py": ruff_fix_with_imports,
-        "shed_format.py": shed_result,
+        "shed_format.py": shed_result_no_refactor,  # Default (matches WASM implementation)
+        "shed_format_no_refactor.py": shed_result_no_refactor,
+        "shed_format_with_refactor.py": shed_result_with_refactor,
     }
-
     for filename, content in outputs.items():
         (outputs_dir / filename).write_text(content)
 
     print("💾 Saved all configurations to test_files/outputs/")
-    print("🔍 Now you can see the exact differences between tools!")
+    print()
+    print("🔍 Verifying all outputs are unique...")
+
+    # Build a map of all outputs with their names
+    all_outputs = {
+        "Ruff format only": ruff_format_only,
+        "Black only": black_only,
+        "Ruff fix (no imports)": ruff_fix_no_imports,
+        "Ruff fix (with imports)": ruff_fix_with_imports,
+        "Shed (no refactor)": shed_result_no_refactor,
+        "Shed (with refactor)": shed_result_with_refactor,
+    }
+
+    # Find groups of identical outputs
+    matching_groups = []
+    seen = set()
+
+    for name1, content1 in all_outputs.items():
+        if name1 in seen:
+            continue
+
+        group = [name1]
+        for name2, content2 in all_outputs.items():
+            if name1 != name2 and name2 not in seen and content1 == content2:
+                group.append(name2)
+                seen.add(name2)
+
+        if len(group) > 1:
+            matching_groups.append(group)
+        seen.add(name1)
+
+    # Report results
+    if matching_groups:
+        print("❌ Found identical outputs:")
+        for group in matching_groups:
+            print(f"   • {' == '.join(group)}")
+        print()
+        raise ValueError(
+            f"Expected all formatter outputs to be unique, but found {len(matching_groups)} "
+            f"group(s) of matching outputs: {matching_groups}"
+        )
+    else:
+        print("✅ All formatter outputs are unique!")
+        print("🎯 SUCCESS: Each tool produces distinct results!")
+
 
 if __name__ == "__main__":
     main()

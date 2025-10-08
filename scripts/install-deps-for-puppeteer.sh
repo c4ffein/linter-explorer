@@ -1,7 +1,9 @@
+#!/bin/bash
+# Install Puppeteer dependencies
+
 sudo apt update && sudo apt install -y \
   ca-certificates \
   fonts-liberation \
-  libasound2 \
   libatk-bridge2.0-0 \
   libatk1.0-0 \
   libc6 \
@@ -12,7 +14,6 @@ sudo apt update && sudo apt install -y \
   libexpat1 \
   libfontconfig1 \
   libgbm1 \
-  libgcc1 \
   libglib2.0-0 \
   libgtk-3-0 \
   libnspr4 \
@@ -36,3 +37,9 @@ sudo apt update && sudo apt install -y \
   lsb-release \
   wget \
   xdg-utils
+
+# Ubuntu 24.04+ uses new package names
+sudo apt install -y libasound2t64 || sudo apt install -y libasound2
+sudo apt install -y libgcc-s1 || sudo apt install -y libgcc1
+
+echo "✅ Puppeteer dependencies installed!"

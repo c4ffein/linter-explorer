@@ -7,6 +7,9 @@ __pycache__/
 dist/
 build/
 
+# Js
+node_modules
+
 # Ruff cache
 .ruff_cache/
 

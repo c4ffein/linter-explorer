@@ -56,6 +56,8 @@ def function_with_complex_issues(
                     results.append("")
             elif isinstance(value, int):
                 results.append(str(value))
+        else:
+            pass
 
     # Unused variable
     inner_func(1, 2)
@@ -171,15 +173,17 @@ result = function_call(
 )
 
 # Assert statements with comments - Black collapses, Ruff preserves structure
-
-assert condition_a  # comment about condition a
-assert condition_b  # comment about condition b
-assert condition_c  # comment about condition c
+assert (
+    condition_a  # comment about condition a
+    and condition_b  # comment about condition b
+    and condition_c  # comment about condition c
+)
 
 # Another assert example that shows formatting differences
-
-assert very_long_variable_name_that_exceeds_normal_length
-assert another_very_long_condition_that_makes_this_multiline
+assert (
+    very_long_variable_name_that_exceeds_normal_length
+    and another_very_long_condition_that_makes_this_multiline
+)
 
 # Complex nested assertions
 assert (x > 0 and y > 0) or (x < 0 and y < 0)  # positive check  # negative check

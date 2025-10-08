@@ -164,7 +164,11 @@ if (very_long_condition_name and another_long_condition_name) or (
     pass
 
 # Trailing commas in function calls - different preferences
-result = function_call(argument_one, argument_two, argument_three)
+result = function_call(
+    argument_one,
+    argument_two,
+    argument_three,
+)
 
 # Assert statements with comments - Black collapses, Ruff preserves structure
 
